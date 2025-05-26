@@ -33,6 +33,11 @@ class VkHelpers:
             hist = hist["items"]
         return self.history_to_history_item(hist, peer_id)
 
+    def attachement_to_photo_url(self, attachment):
+        if attachment["type"] == "photo":
+            photo = attachment["photo"]
+            return photo["sizes"][-1]["url"]
+    
     def history_to_history_item(self, history, peer_id=None):
         history_items = []
         for item in reversed(history):
@@ -44,6 +49,7 @@ class VkHelpers:
                         "link": self.make_direct_link(peer_id, item["conversation_message_id"]),
                         "text": item["text"],
                         "date": self.date_from_ts_to_str(item["date"]),
+                        "attachments": item.get("attachments", []),
                     }
                 )
         return history_items

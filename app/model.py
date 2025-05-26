@@ -1,6 +1,9 @@
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
+import mimetypes
+import requests
+import base64
 
 model = ChatOllama(
     base_url="http://172.29.144.1:11434",
@@ -14,8 +17,8 @@ model = ChatOllama(
 )
 
 
-def system_template(instruction):
-    return ChatPromptTemplate([("system", instruction), ("user", "{chat_messages}")])
+def system_template(instruction, user_messages):
+    return ChatPromptTemplate([("system", instruction)] + user_messages)
 
 def simple_prompt(instruction):
     return PromptTemplate(
@@ -85,6 +88,49 @@ def povest_bot():
     """
     return simple_prompt(instruction) | model
     
+def detect_mime_type(file_path):
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if mime_type is None:
+        mime_type = "application/octet-stream"  # Default type if detection fails
+    return mime_type
+
+
+def get_image(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        mime_type = detect_mime_type(url)
+        base64_image = base64.b64encode(response.content).decode('utf-8')
+        return image_content(base64_image, mime_type)
+    else:
+        return ""
+
+def image_content(image_data, mime_type=None):
+        return {
+            "type": "image",
+            "source_type": "base64",
+            "data": image_data,
+            "mime_type": mime_type,
+        }
+
+def describe_image(image_url):
+    instruction = """
+    Ты — полезный и талантливый помощник, специализирующийся на описании изображений.
+    Твоя задача — создать подробное и живое описание изображения, которое будет интересно читать.
+    Используй дружелюбный и разговорный тон, чтобы сделать текст лёгким для восприятия.
+    
+    **Формат**:
+    - Опиши, что изображено на картинке.
+    - Укажи детали, которые могут быть интересны читателю.
+    - Используй яркие прилагательные и метафоры, чтобы сделать описание живым.
+    - Отдельно извлеки текст и надписи с изображения, если они есть и верни в виде текста. 
+    
+    **Важно** пиши только на русском языке.
+    **Важно** не делай вступлений, типа "Окей вот описание картинки" или "Вот что я вижу на картинке", просто пиши описание.
+    """
+    image_content = get_image(image_url)
+    user_message = {"role": "user", "content":[image_content] }
+    return system_template(instruction, [user_message]) | model
+
 
 def dramatic_chat_summary(chat_messages):
     povest_template = povest_bot()
