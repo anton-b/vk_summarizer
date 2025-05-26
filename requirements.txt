@@ -1,0 +1,18 @@
+requests
+fastapi[standard]
+uvicorn
+boto3
+langchain
+langchain_community
+# https://ibusinessfunding.atlassian.net/browse/NAVI-197
+langchain-core
+langchain-ollama
+fastapi-sessions
+python-dotenv
+black
+flake8
+isort
+autoflake
+coverage
+psycopg2-binary
+vk_api
