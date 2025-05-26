@@ -20,10 +20,10 @@ if __name__ == "__main__":
     expected_messages = 1000  # ожидаемое количество сообщений для сводки
     message_count = 0  # счётчик сообщений
     # summary = summarize_peer(peer_id, last_messages_num=expected_messages, offset=50000)
-    summary = summarize_to_povest(peer_id, last_messages_num=expected_messages, offset=random_offset)
-    # print(f"Сводка для последних {expected_messages} сообщений: {summary}")
-    # vk_api.messages.send(
-    # peer_id="2000000066",
-    # message=f"{summary}",
-    # random_id=0
-    # )
+    link, summary = summarize_to_povest(peer_id, last_messages_num=expected_messages, offset=random_offset)
+    
+    vk_api.messages.send(
+    peer_id="2000000066",
+    message=f"{summary}\n\n [{link}|ссылка на начало]",
+    random_id=0
+    )

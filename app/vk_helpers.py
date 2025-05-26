@@ -12,6 +12,10 @@ class VkHelpers:
 
         return datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
 
+    def make_direct_link(self, peer_id, cmid):
+        # https://vk.com/im/convo/2000000022?cmid=374741&entrypoint=list_all
+        return f"https://vk.com/im/convo/{peer_id}?cmid={cmid}&entrypoint=list_all"
+        
     def get_history_with_names(self, peer_id, last_messages_num=200, offset=0):
         vk_api = self.vk_api
         hist = []
@@ -27,9 +31,9 @@ class VkHelpers:
                 peer_id=peer_id, extended=1, count=last_messages_num, offset=offset
             )  # Reverse to have the oldest messages first
             hist = hist["items"]
-        return self.history_to_history_item(hist)
+        return self.history_to_history_item(hist, peer_id)
 
-    def history_to_history_item(self, history):
+    def history_to_history_item(self, history, peer_id=None):
         history_items = []
         for item in reversed(history):
             if "text" in item:
@@ -37,6 +41,7 @@ class VkHelpers:
                 history_items.append(
                     {
                         "user_name": user_name,
+                        "link": self.make_direct_link(peer_id, item["conversation_message_id"]),
                         "text": item["text"],
                         "date": self.date_from_ts_to_str(item["date"]),
                     }
