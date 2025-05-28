@@ -50,14 +50,16 @@ if __name__ == "__main__":
             message=f"{part}",
             random_id=0
         )
-    rand_photo = random.sample(photos, min(5, len(photos)))  # случайные 2 фото из списка
-    for photo in rand_photo:
-        vk_api.messages.send(
-            peer_id="2000000066",
-            attachment=photo,
-            message = f"[{photo['url']}|картинка]\n\n{photo['description']}\n\nДата: {photo['date']}\n\n{photo['user_name']}\n\n[{photo['item_link']}|{photo['text'] or 'Оригинал тут'}]",
-            random_id=0
-        )
+    if photos:
+        print(f"Всего фото в этом куске: {len(photos)}\n")
+        rand_photos = random.sample(photos, min(5, len(photos)))
+        for photo in rand_photos:
+            vk_api.messages.send(
+                peer_id="2000000066",
+                attachment=photo,
+                message = f"[{photo['url']}|картинка]\n\n{photo['description']}\n\nДата: {photo['date']}\n\n{photo['user_name']}\n\n[{photo['item_link']}|{photo['text'] or 'Оригинал тут'}]",
+                random_id=0
+            )
     vk_api.messages.send(
             peer_id="2000000066",
             message=f"[{link}|***ссылка на ту часть чатика***]",
