@@ -37,7 +37,7 @@ if __name__ == "__main__":
     random_offset = random.randint(0, total_messages - 200)  # случайный оффсет для получения сообщений
     print(f"Используем оффсет: {random_offset}")
     
-    expected_messages = 600  # ожидаемое количество сообщений для сводки
+    expected_messages = 600 # ожидаемое количество сообщений для сводки
     message_count = 0  # счётчик сообщений
     # summary = summarize_peer(peer_id, last_messages_num=expected_messages, offset=50000)
     link, summary, photos = summarize_to_povest(peer_id, last_messages_num=expected_messages, offset=random_offset)    
